@@ -491,6 +491,11 @@
   flex: 1;
   padding: 0;
   caret-color: #cdd6f4;
+  caret-shape: block;
+}
+
+.terminal-input:focus-visible {
+  outline: none;
 }
 
 /* Activity app */
