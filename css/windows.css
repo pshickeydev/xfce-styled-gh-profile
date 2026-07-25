@@ -40,6 +40,130 @@
   max-height: calc(100vh - 34px);
 }
 
+/* Window: Inactive (unfocused) */
+.window.inactive {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  border-color: #a0a0a0;
+}
+
+/* Window title bar */
+.window-titlebar {
+  background: linear-gradient(to bottom, #c0c0c0 0%, #a8a8a8 50%, #989898 51%, #b0b0b0 100%);
+  color: #2c2c2c;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  padding: 0 2px 0 6px;
+  border-radius: 6px 6px 0 0;
+  cursor: grab;
+  flex-shrink: 0;
+  border-bottom: 1px solid #888;
+  gap: 4px;
+}
+
+.window.inactive .window-titlebar {
+  background: linear-gradient(to bottom, #d8d8d8 0%, #cccccc 50%, #c0c0c0 51%, #d0d0d0 100%);
+  color: #666;
+}
+
+/* Window: Active title bar (blue accent like Greybird) */
+.window:not(.inactive) .window-titlebar {
+  background: linear-gradient(to bottom, #6a9fd4 0%, #4a7ab5 50%, #3a6aa5 51%, #5a8ac5 100%);
+  color: #fff;
+  border-bottom-color: #3a6aa5;
+}
+
+.window-titlebar:active {
+  cursor: grabbing;
+}
+
+.window-title-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.window:not(.inactive) .window-title-icon {
+  filter: brightness(0) invert(1);
+}
+
+.window.inactive .window-title-icon {
+  filter: brightness(0.5);
+}
+
+.window-title-text {
+  flex: 1;
+  font-size: 12px;
+  font-weight: bold;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Window control buttons */
+.window-buttons {
+  display: flex;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.window-btn {
+  border: 1px solid #888;
+  border-radius: 3px;
+  background: linear-gradient(to bottom, #e0e0e0, #c8c8c8);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  font-size: 10px;
+  line-height: 1;
+  touch-action: manipulation;
+}
+
+.window:not(.inactive) .window-btn {
+  border-color: #3a6aa5;
+  background: linear-gradient(to bottom, #7ab0e8, #5a8ac5);
+}
+
+.window-btn:hover {
+  background: linear-gradient(to bottom, #f0f0f0, #d0d0d0);
+}
+
+.window:not(.inactive) .window-btn:hover {
+  background: linear-gradient(to bottom, #8fc0f0, #6a9fd4);
+}
+
+.window-btn:active {
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.window-btn svg {
+  width: 12px;
+  height: 12px;
+  pointer-events: none;
+}
+
+.window-btn.close:hover {
+  background: linear-gradient(to bottom, #f08080, #d05050);
+  border-color: #a03030;
+}
+
+.window-btn.close:hover svg {
+  color: #fff;
+}
+
+/* Window content area */
+.window-content {
+  flex: 1;
+  overflow: auto;
+  background: #fafafa;
+  position: relative;
+  border-radius: 0 0 6px 6px;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Responsive window chrome — placed after base rules so media queries override correctly */
 @media (max-width: 640px) {
   .window {
     min-width: 160px;
@@ -139,128 +263,6 @@
     width: 22px;
     height: 22px;
   }
-}
-
-/* Window: Inactive (unfocused) */
-.window.inactive {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  border-color: #a0a0a0;
-}
-
-/* Window title bar */
-.window-titlebar {
-  background: linear-gradient(to bottom, #c0c0c0 0%, #a8a8a8 50%, #989898 51%, #b0b0b0 100%);
-  color: #2c2c2c;
-  height: 26px;
-  display: flex;
-  align-items: center;
-  padding: 0 2px 0 6px;
-  border-radius: 6px 6px 0 0;
-  cursor: grab;
-  flex-shrink: 0;
-  border-bottom: 1px solid #888;
-  gap: 4px;
-}
-
-.window.inactive .window-titlebar {
-  background: linear-gradient(to bottom, #d8d8d8 0%, #cccccc 50%, #c0c0c0 51%, #d0d0d0 100%);
-  color: #666;
-}
-
-/* Window: Active title bar (blue accent like Greybird) */
-.window:not(.inactive) .window-titlebar {
-  background: linear-gradient(to bottom, #6a9fd4 0%, #4a7ab5 50%, #3a6aa5 51%, #5a8ac5 100%);
-  color: #fff;
-  border-bottom-color: #3a6aa5;
-}
-
-.window-titlebar:active {
-  cursor: grabbing;
-}
-
-.window-title-icon {
-  width: 16px;
-  height: 16px;
-  flex-shrink: 0;
-}
-
-.window:not(.inactive) .window-title-icon {
-  filter: brightness(0) invert(1);
-}
-
-.window.inactive .window-title-icon {
-  filter: brightness(0.5);
-}
-
-.window-title-text {
-  flex: 1;
-  font-size: 12px;
-  font-weight: bold;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* Window control buttons */
-.window-buttons {
-  display: flex;
-  gap: 2px;
-  flex-shrink: 0;
-}
-
-.window-btn {
-  border: 1px solid #888;
-  border-radius: 3px;
-  background: linear-gradient(to bottom, #e0e0e0, #c8c8c8);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  font-size: 10px;
-  line-height: 1;
-}
-
-.window:not(.inactive) .window-btn {
-  border-color: #3a6aa5;
-  background: linear-gradient(to bottom, #7ab0e8, #5a8ac5);
-}
-
-.window-btn:hover {
-  background: linear-gradient(to bottom, #f0f0f0, #d0d0d0);
-}
-
-.window:not(.inactive) .window-btn:hover {
-  background: linear-gradient(to bottom, #8fc0f0, #6a9fd4);
-}
-
-.window-btn:active {
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
-}
-
-.window-btn svg {
-  width: 12px;
-  height: 12px;
-  pointer-events: none;
-}
-
-.window-btn.close:hover {
-  background: linear-gradient(to bottom, #f08080, #d05050);
-  border-color: #a03030;
-}
-
-.window-btn.close:hover svg {
-  color: #fff;
-}
-
-/* Window content area */
-.window-content {
-  flex: 1;
-  overflow: auto;
-  background: #fafafa;
-  position: relative;
-  border-radius: 0 0 6px 6px;
-  -webkit-overflow-scrolling: touch;
 }
 
 @media (max-width: 640px) {

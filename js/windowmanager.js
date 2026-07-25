@@ -109,8 +109,11 @@ const WindowManager = (function () {
     el.addEventListener('mousedown', () => focusWindow(win));
     el.addEventListener('touchstart', (e) => {
       focusWindow(win);
-      // Allow default scrolling inside content, but not on chrome
+      // Allow default scrolling inside content
       if (e.target.closest('.window-content')) return;
+      // Allow taps on window control buttons to reach click handlers
+      if (e.target.closest('.window-buttons')) return;
+      // Prevent drag-start / scroll interference when touching chrome
       e.preventDefault();
     }, { passive: false });
 
