@@ -345,7 +345,7 @@ const Apps = (function () {
     function addPrompt(input) {
       const wrap = document.createElement('div');
       wrap.className = 'terminal-input-line';
-      wrap.innerHTML = `<span class="terminal-prompt">${state.user}@github</span>:<span class="terminal-accent">${state.cwd}</span>$ `;
+      wrap.innerHTML = `<span class="terminal-prompt">${state.user}@github</span>:<span class="terminal-accent">${state.cwd}</span>$`;
       const inputEl = document.createElement('input');
       inputEl.className = 'terminal-input';
       inputEl.type = 'text';

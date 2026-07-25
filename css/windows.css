@@ -490,6 +490,7 @@
   font-size: inherit;
   flex: 1;
   padding: 0;
+  margin-left: 0.35em;
   caret-color: #cdd6f4;
   caret-shape: block;
 }
