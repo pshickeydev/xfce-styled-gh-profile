@@ -101,6 +101,7 @@ html, body {
     top: 8px;
     left: 8px;
     gap: 6px;
+    max-height: calc(100vh - 50px);
   }
 
   .desktop-icon {
@@ -167,6 +168,7 @@ html, body {
     top: 8px;
     left: 8px;
     gap: 6px;
+    max-height: calc(100vh - 50px);
   }
 
   .desktop-icon {

@@ -45,16 +45,17 @@
     min-width: 160px;
     min-height: 80px;
     border-radius: 4px;
+    max-height: calc(100vh - 40px);
   }
 
   .window-titlebar {
-    height: 32px;
+    height: 46px;
     padding: 0 4px 0 8px;
   }
 
   .window-title-icon {
-    width: 18px;
-    height: 18px;
+    width: 22px;
+    height: 22px;
   }
 
   .window-title-text {
@@ -62,17 +63,17 @@
   }
 
   .window-btn {
-    width: 30px;
-    height: 30px;
+    width: 44px;
+    height: 44px;
   }
 
   .window-btn svg {
-    width: 14px;
-    height: 14px;
+    width: 18px;
+    height: 18px;
   }
 
   .window.maximized {
-    height: calc(100% - 36px) !important;
+    height: 100% !important;
   }
 
   .window-resize-handle {
@@ -103,16 +104,17 @@
     min-width: 160px;
     min-height: 80px;
     border-radius: 4px;
+    max-height: calc(100vh - 40px);
   }
 
   .window-titlebar {
-    height: 32px;
+    height: 46px;
     padding: 0 4px 0 8px;
   }
 
   .window-title-icon {
-    width: 18px;
-    height: 18px;
+    width: 22px;
+    height: 22px;
   }
 
   .window-title-text {
@@ -120,17 +122,17 @@
   }
 
   .window-btn {
-    width: 30px;
-    height: 30px;
+    width: 44px;
+    height: 44px;
   }
 
   .window-btn svg {
-    width: 14px;
-    height: 14px;
+    width: 18px;
+    height: 18px;
   }
 
   .window.maximized {
-    height: calc(100% - 36px) !important;
+    height: 100% !important;
   }
 
   .window-resize-handle {
