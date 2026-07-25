@@ -1,0 +1,19 @@
+# Playwright / MCP debug artifacts
+.playwright-mcp/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Node (if ever added for dev server)
+node_modules/
+package-lock.json
+
+# Logs
+*.log

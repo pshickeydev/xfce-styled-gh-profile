@@ -1,0 +1,336 @@
+/* ============================================
+   XFCE Greybird Theme - Desktop Environment
+   ============================================ */
+
+/* Reset and base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+}
+
+/* Allow text selection in window content areas */
+.window-content,
+.window-content * {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  user-select: text;
+}
+
+/* Visible focus indicators for keyboard navigation */
+button:focus-visible,
+a:focus-visible,
+[tabindex]:focus-visible,
+[role="menuitem"]:focus-visible,
+[role="button"]:focus-visible,
+[role="tab"]:focus-visible,
+input:focus-visible {
+  outline: 2px solid #4a7ab5;
+  outline-offset: 1px;
+}
+
+.desktop-icon:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: -2px;
+  background: rgba(100, 160, 220, 0.35);
+}
+
+.taskbar-item:focus-visible {
+  outline: 2px solid #4a7ab5;
+  outline-offset: -1px;
+}
+
+.repo-item:focus-visible {
+  outline: 2px solid #4a7ab5;
+  outline-offset: -2px;
+  background: rgba(74, 122, 181, 0.1);
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: "Cantarell", "Ubuntu", "Segoe UI", "Trebuchet MS", sans-serif;
+  font-size: 14px;
+  color: #2c2c2c;
+  cursor: default;
+}
+
+/* Desktop background - XFCE default-ish gradient wallpaper */
+#desktop {
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(135deg, #1a3a5c 0%, #2d5a8c 30%, #4a7ab5 60%, #6aa3d5 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Desktop icons grid */
+#desktop-icons {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-height: calc(100vh - 60px);
+}
+
+.desktop-icon {
+  width: 90px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 4px;
+  border-radius: 4px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.desktop-icon:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.desktop-icon.selected {
+  background: rgba(100, 160, 220, 0.35);
+}
+
+.desktop-icon img,
+.desktop-icon .icon-img {
+  width: 32px;
+  height: 32px;
+  margin-bottom: 4px;
+}
+
+.desktop-icon .icon-label {
+  color: #fff;
+  font-size: 12px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8), 0 0 1px rgba(0, 0, 0, 0.8);
+  word-wrap: break-word;
+  max-width: 86px;
+  line-height: 1.2;
+}
+
+/* ============================================
+   XFCE Panel (bottom, single panel)
+   ============================================ */
+#panel {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 30px;
+  background: linear-gradient(to bottom, #d8d8d8 0%, #c8c8c8 50%, #c0c0c0 51%, #d0d0d0 100%);
+  border-top: 1px solid #b0b0b0;
+  box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  padding: 0 4px;
+  gap: 4px;
+  z-index: 99999;
+}
+
+/* Panel: Applications button area */
+#panel-apps {
+  display: flex;
+  align-items: center;
+}
+
+#menu-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(to bottom, #e0e0e0, #c8c8c8);
+  border: 1px solid #a0a0a0;
+  border-radius: 3px;
+  padding: 3px 10px 3px 6px;
+  font-size: 13px;
+  color: #333;
+  cursor: pointer;
+  height: 24px;
+}
+
+#menu-button:hover {
+  background: linear-gradient(to bottom, #e8e8e8, #d0d0d0);
+  border-color: #888;
+}
+
+#menu-button:active,
+#menu-button.open {
+  background: linear-gradient(to bottom, #c0c0c0, #d8d8d8);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.15);
+}
+
+#menu-button .panel-icon {
+  flex-shrink: 0;
+}
+
+/* Panel: Taskbar */
+#panel-taskbar {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  overflow: hidden;
+  height: 100%;
+  padding: 0 4px;
+}
+
+.taskbar-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(to bottom, #e8e8e8, #d0d0d0);
+  border: 1px solid #b0b0b0;
+  border-radius: 3px;
+  padding: 2px 8px;
+  font-size: 12px;
+  color: #333;
+  cursor: pointer;
+  height: 22px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 0 1 auto;
+  max-width: 160px;
+}
+
+.taskbar-item img,
+.taskbar-item .taskbar-icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.taskbar-item .taskbar-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.taskbar-item:hover {
+  background: linear-gradient(to bottom, #f0f0f0, #d8d8d8);
+  border-color: #888;
+}
+
+.taskbar-item.active {
+  background: linear-gradient(to bottom, #b8d0ea, #a0b8d8);
+  border-color: #7898c0;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Panel: System tray area */
+#panel-tray {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 8px;
+  height: 100%;
+}
+
+#panel-clock {
+  font-size: 12px;
+  color: #333;
+  padding: 0 4px;
+}
+
+/* ============================================
+   Application Menu (Whisker-like dropdown)
+   ============================================ */
+#menu-dropdown {
+  position: absolute;
+  bottom: 32px;
+  left: 4px;
+  width: 280px;
+  background: #fafafa;
+  border: 1px solid #888;
+  border-radius: 4px;
+  box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+  z-index: 100000;
+  overflow: hidden;
+}
+
+#menu-dropdown.hidden {
+  display: none;
+}
+
+.menu-header {
+  background: linear-gradient(to bottom, #4a7ab5, #2d5a8c);
+  color: #fff;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.menu-header .menu-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.menu-section {
+  padding: 6px;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px;
+  border-radius: 3px;
+  cursor: pointer;
+  color: #2c2c2c;
+  font-size: 13px;
+}
+
+.menu-item:hover {
+  background: linear-gradient(to bottom, #d0e0f0, #b8d0ea);
+  color: #1a3a5c;
+}
+
+.menu-item img,
+.menu-item .menu-item-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.menu-separator {
+  height: 1px;
+  background: #d0d0d0;
+  margin: 4px 8px;
+}
+
+/* Utility */
+.hidden {
+  display: none !important;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #ececec;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c0c0c0;
+  border-radius: 5px;
+  border: 2px solid #ececec;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a0a0a0;
+}

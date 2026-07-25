@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>pshickeydev - XFCE Desktop</title>
+  <link rel="stylesheet" href="css/xfce.css">
+  <link rel="stylesheet" href="css/windows.css">
+</head>
+<body>
+  <div id="desktop" role="application" aria-label="XFCE Desktop Environment">
+    <nav id="desktop-icons" aria-label="Desktop icons"></nav>
+    <div id="windows-container" role="main" aria-label="Window area"></div>
+    <div id="menu-dropdown" class="hidden" role="menu" aria-hidden="true" aria-label="Applications menu"></div>
+    <div id="panel" role="navigation" aria-label="Panel">
+      <div id="panel-apps">
+        <button id="menu-button" aria-haspopup="true" aria-expanded="false" aria-controls="menu-dropdown">
+          <svg class="panel-icon" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+            <ellipse cx="8" cy="9" rx="5" ry="6" fill="#d4d4d4" stroke="#666" stroke-width="1"/>
+            <line x1="8" y1="3" x2="8" y2="7" stroke="#888" stroke-width="1.5"/>
+            <circle cx="8" cy="6" r="1" fill="#888"/>
+          </svg>
+          <span>Applications</span>
+        </button>
+      </div>
+      <div id="panel-taskbar" role="tablist" aria-label="Open windows"></div>
+      <div id="panel-tray">
+        <span id="panel-clock" role="timer" aria-live="off"></span>
+      </div>
+    </div>
+  </div>
+  <script src="js/github.js"></script>
+  <script src="js/windowmanager.js"></script>
+  <script src="js/desktop.js"></script>
+  <script src="js/apps.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
