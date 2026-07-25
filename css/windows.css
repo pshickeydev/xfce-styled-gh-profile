@@ -8,8 +8,20 @@
   top: 0;
   left: 0;
   right: 0;
-  bottom: 30px;
+  bottom: var(--panel-height, 30px);
   pointer-events: none;
+}
+
+@media (max-width: 640px) {
+  #windows-container {
+    bottom: var(--panel-height, 36px);
+  }
+}
+
+@media (max-height: 480px) {
+  #windows-container {
+    bottom: var(--panel-height, 36px);
+  }
 }
 
 /* Individual window */
@@ -24,6 +36,107 @@
   pointer-events: auto;
   min-width: 200px;
   min-height: 100px;
+  max-width: calc(100vw - 4px);
+  max-height: calc(100vh - 34px);
+}
+
+@media (max-width: 640px) {
+  .window {
+    min-width: 160px;
+    min-height: 80px;
+    border-radius: 4px;
+  }
+
+  .window-titlebar {
+    height: 32px;
+    padding: 0 4px 0 8px;
+  }
+
+  .window-title-icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .window-title-text {
+    font-size: 13px;
+  }
+
+  .window-btn {
+    width: 30px;
+    height: 30px;
+  }
+
+  .window-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .window.maximized {
+    height: calc(100% - 36px) !important;
+  }
+
+  .window-resize-handle {
+    width: 22px;
+    height: 22px;
+  }
+}
+
+@media (min-width: 641px) {
+  .window-btn {
+    width: 24px;
+    height: 24px;
+  }
+
+  .window-btn svg {
+    width: 13px;
+    height: 13px;
+  }
+
+  .window-resize-handle {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+@media (max-height: 480px) {
+  .window {
+    min-width: 160px;
+    min-height: 80px;
+    border-radius: 4px;
+  }
+
+  .window-titlebar {
+    height: 32px;
+    padding: 0 4px 0 8px;
+  }
+
+  .window-title-icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .window-title-text {
+    font-size: 13px;
+  }
+
+  .window-btn {
+    width: 30px;
+    height: 30px;
+  }
+
+  .window-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .window.maximized {
+    height: calc(100% - 36px) !important;
+  }
+
+  .window-resize-handle {
+    width: 22px;
+    height: 22px;
+  }
 }
 
 /* Window: Inactive (unfocused) */
@@ -94,8 +207,6 @@
 }
 
 .window-btn {
-  width: 20px;
-  height: 20px;
   border: 1px solid #888;
   border-radius: 3px;
   background: linear-gradient(to bottom, #e0e0e0, #c8c8c8);
@@ -147,6 +258,58 @@
   background: #fafafa;
   position: relative;
   border-radius: 0 0 6px 6px;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 640px) {
+  .profile-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .profile-avatar {
+    width: 64px;
+    height: 64px;
+  }
+
+  .profile-stats {
+    gap: 8px;
+  }
+
+  .profile-stat .stat-value {
+    font-size: 16px;
+  }
+
+  .profile-stat .stat-label {
+    font-size: 10px;
+  }
+
+  .repo-item {
+    flex: 1 1 80px;
+    min-width: 72px;
+    max-width: 110px;
+    padding: 6px 2px;
+  }
+
+  .repo-item .repo-icon {
+    width: 28px;
+    height: 28px;
+  }
+
+  .repo-item .repo-name {
+    font-size: 11px;
+    max-width: 76px;
+  }
+
+  .terminal-content {
+    font-size: 16px;
+    padding: 10px;
+  }
+
+  .activity-item {
+    font-size: 11px;
+  }
 }
 
 .window-content::-webkit-scrollbar {
@@ -165,6 +328,8 @@
   width: 100% !important;
   height: calc(100% - 0px) !important;
   border-radius: 0;
+  max-width: none;
+  max-height: none;
 }
 
 .window.maximized .window-titlebar {
@@ -176,8 +341,8 @@
   position: absolute;
   bottom: 0;
   right: 0;
-  width: 14px;
-  height: 14px;
+  width: 18px;
+  height: 18px;
   cursor: nwse-resize;
   z-index: 10;
 }
@@ -331,7 +496,9 @@
 }
 
 .repo-item {
-  width: 100px;
+  flex: 1 1 100px;
+  min-width: 80px;
+  max-width: 120px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -448,7 +615,7 @@
   background: #1e1e2e;
   color: #cdd6f4;
   font-family: "Ubuntu Mono", "Cascadia Code", "Fira Code", "Consolas", monospace;
-  font-size: 13px;
+  font-size: 16px;
   padding: 12px;
   height: 100%;
   overflow: auto;

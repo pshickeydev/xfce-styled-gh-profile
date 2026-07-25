@@ -11,16 +11,31 @@ const WindowManager = (function () {
 
   const container = () => document.getElementById('windows-container');
 
+  function isMobile() {
+    return window.matchMedia('(max-width: 640px), (max-height: 480px)').matches;
+  }
+
+  function getPanelHeight() {
+    return isMobile() ? 36 : 30;
+  }
+
   function createWindow(options) {
     const id = nextId++;
+    const defaultWidth = options.width || 500;
+    const defaultHeight = options.height || 400;
+    const panelHeight = getPanelHeight();
+    const maxWidth = window.innerWidth - 4;
+    const maxHeight = window.innerHeight - panelHeight - 4;
+    const width = Math.min(defaultWidth, maxWidth);
+    const height = Math.min(defaultHeight, maxHeight);
     const win = {
       id: id,
       title: options.title || 'Window',
       icon: options.icon || '',
-      width: options.width || 500,
-      height: options.height || 400,
-      x: options.x !== undefined ? options.x : Math.max(20, (window.innerWidth - (options.width || 500)) / 2 + (id * 30) % 100),
-      y: options.y !== undefined ? options.y : Math.max(20, (window.innerHeight - 30 - (options.height || 400)) / 2 + (id * 20) % 60),
+      width: width,
+      height: height,
+      x: options.x !== undefined ? options.x : Math.max(20, (window.innerWidth - width) / 2 + (id * 30) % 100),
+      y: options.y !== undefined ? options.y : Math.max(20, (window.innerHeight - panelHeight - height) / 2 + (id * 20) % 60),
       content: options.content || '',
       onMount: options.onMount || null,
       onClose: options.onClose || null,
@@ -33,8 +48,8 @@ const WindowManager = (function () {
     };
 
     // Keep within viewport
-    win.x = Math.min(win.x, window.innerWidth - win.width - 10);
-    win.y = Math.min(win.y, window.innerHeight - win.height - 35);
+    win.x = Math.min(win.x, window.innerWidth - win.width - 4);
+    win.y = Math.min(win.y, window.innerHeight - win.height - panelHeight - 2);
     win.x = Math.max(0, win.x);
     win.y = Math.max(0, win.y);
 
@@ -92,6 +107,12 @@ const WindowManager = (function () {
 
     // Focus on click
     el.addEventListener('mousedown', () => focusWindow(win));
+    el.addEventListener('touchstart', (e) => {
+      focusWindow(win);
+      // Allow default scrolling inside content, but not on chrome
+      if (e.target.closest('.window-content')) return;
+      e.preventDefault();
+    }, { passive: false });
 
     // Title bar: drag to move
     const titlebar = el.querySelector('.window-titlebar');
@@ -100,6 +121,11 @@ const WindowManager = (function () {
       if (win.maximized) return;
       startDrag(win, e);
     });
+    titlebar.addEventListener('touchstart', (e) => {
+      if (e.target.closest('.window-buttons')) return;
+      if (win.maximized) return;
+      startDrag(win, e);
+    }, { passive: false });
 
     // Double-click title bar to maximize/restore
     titlebar.addEventListener('dblclick', (e) => {
@@ -128,6 +154,10 @@ const WindowManager = (function () {
         e.stopPropagation();
         startResize(win, e);
       });
+      handle.addEventListener('touchstart', (e) => {
+        e.stopPropagation();
+        startResize(win, e);
+      }, { passive: false });
     }
 
     // Call onMount callback
@@ -198,10 +228,21 @@ const WindowManager = (function () {
     return windows;
   }
 
+  function getPointer(e) {
+    if (e.touches && e.touches.length > 0) {
+      return e.touches[0];
+    }
+    if (e.changedTouches && e.changedTouches.length > 0) {
+      return e.changedTouches[0];
+    }
+    return e;
+  }
+
   // --- Dragging ---
   function startDrag(win, e) {
-    const startX = e.clientX;
-    const startY = e.clientY;
+    const pointer = getPointer(e);
+    const startX = pointer.clientX;
+    const startY = pointer.clientY;
     const startLeft = win.el.offsetLeft;
     const startTop = win.el.offsetTop;
 
@@ -209,11 +250,13 @@ const WindowManager = (function () {
     focusWindow(win);
 
     function onMove(e) {
-      let newLeft = startLeft + (e.clientX - startX);
-      let newTop = startTop + (e.clientY - startY);
+      const p = getPointer(e);
+      let newLeft = startLeft + (p.clientX - startX);
+      let newTop = startTop + (p.clientY - startY);
       // Constrain to viewport (above panel)
+      const panelHeight = getPanelHeight();
       newLeft = Math.max(0, Math.min(newLeft, window.innerWidth - 40));
-      newTop = Math.max(0, Math.min(newTop, window.innerHeight - 50));
+      newTop = Math.max(0, Math.min(newTop, window.innerHeight - panelHeight - 2));
       win.el.style.left = newLeft + 'px';
       win.el.style.top = newTop + 'px';
       win.x = newLeft;
@@ -223,26 +266,35 @@ const WindowManager = (function () {
     function onUp() {
       document.removeEventListener('mousemove', onMove);
       document.removeEventListener('mouseup', onUp);
+      document.removeEventListener('touchmove', onMove);
+      document.removeEventListener('touchend', onUp);
+      document.removeEventListener('touchcancel', onUp);
     }
 
     document.addEventListener('mousemove', onMove);
     document.addEventListener('mouseup', onUp);
-    e.preventDefault();
+    document.addEventListener('touchmove', onMove, { passive: false });
+    document.addEventListener('touchend', onUp);
+    document.addEventListener('touchcancel', onUp);
+    if (e.cancelable) e.preventDefault();
   }
 
   // --- Resizing ---
   function startResize(win, e) {
-    const startX = e.clientX;
-    const startY = e.clientY;
+    const pointer = getPointer(e);
+    const startX = pointer.clientX;
+    const startY = pointer.clientY;
     const startWidth = win.el.offsetWidth;
     const startHeight = win.el.offsetHeight;
 
     function onMove(e) {
-      let newWidth = Math.max(200, startWidth + (e.clientX - startX));
-      let newHeight = Math.max(100, startHeight + (e.clientY - startY));
+      const p = getPointer(e);
+      const panelHeight = getPanelHeight();
+      let newWidth = Math.max(200, startWidth + (p.clientX - startX));
+      let newHeight = Math.max(100, startHeight + (p.clientY - startY));
       // Constrain to viewport
       newWidth = Math.min(newWidth, window.innerWidth - win.el.offsetLeft - 2);
-      newHeight = Math.min(newHeight, window.innerHeight - win.el.offsetTop - 32);
+      newHeight = Math.min(newHeight, window.innerHeight - win.el.offsetTop - panelHeight - 2);
       win.el.style.width = newWidth + 'px';
       win.el.style.height = newHeight + 'px';
       win.width = newWidth;
@@ -252,12 +304,45 @@ const WindowManager = (function () {
     function onUp() {
       document.removeEventListener('mousemove', onMove);
       document.removeEventListener('mouseup', onUp);
+      document.removeEventListener('touchmove', onMove);
+      document.removeEventListener('touchend', onUp);
+      document.removeEventListener('touchcancel', onUp);
     }
 
     document.addEventListener('mousemove', onMove);
     document.addEventListener('mouseup', onUp);
-    e.preventDefault();
+    document.addEventListener('touchmove', onMove, { passive: false });
+    document.addEventListener('touchend', onUp);
+    document.addEventListener('touchcancel', onUp);
+    if (e.cancelable) e.preventDefault();
   }
+
+  function refitWindows() {
+    const panelHeight = getPanelHeight();
+    windows.forEach(win => {
+      if (win.minimized) return;
+      const maxWidth = window.innerWidth - 4;
+      const maxHeight = window.innerHeight - panelHeight - 4;
+      let newWidth = Math.min(win.width, maxWidth);
+      let newHeight = Math.min(win.height, maxHeight);
+      let newLeft = Math.min(win.x, window.innerWidth - newWidth - 4);
+      let newTop = Math.min(win.y, window.innerHeight - newHeight - panelHeight - 2);
+      newLeft = Math.max(0, newLeft);
+      newTop = Math.max(0, newTop);
+
+      win.el.style.width = newWidth + 'px';
+      win.el.style.height = newHeight + 'px';
+      win.el.style.left = newLeft + 'px';
+      win.el.style.top = newTop + 'px';
+      win.width = newWidth;
+      win.height = newHeight;
+      win.x = newLeft;
+      win.y = newTop;
+    });
+  }
+
+  window.addEventListener('resize', refitWindows);
+  window.addEventListener('orientationchange', refitWindows);
 
   return {
     createWindow: createWindow,
@@ -266,6 +351,7 @@ const WindowManager = (function () {
     restoreWindow: restoreWindow,
     toggleMaximize: toggleMaximize,
     closeWindow: closeWindow,
-    getWindows: getWindows
+    getWindows: getWindows,
+    refitWindows: refitWindows
   };
 })();
