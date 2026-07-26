@@ -49,6 +49,33 @@ const Desktop = (function () {
       </svg>`
     ),
 
+    // Terminal Scroller - terminal with scroll arrows
+    scroller: svgIcon(
+      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+        <rect x="3" y="4" width="26" height="24" rx="3" fill="#1a1a2e" stroke="#888" stroke-width="1.5"/>
+        <text x="6" y="12" fill="#a6e3a1" font-family="monospace" font-size="5">&gt;_</text>
+        <line x1="6" y1="14" x2="20" y2="14" stroke="#cdd6f4" stroke-width="0.8"/>
+        <line x1="6" y1="17" x2="16" y2="17" stroke="#cdd6f4" stroke-width="0.8"/>
+        <line x1="6" y1="20" x2="18" y2="20" stroke="#cdd6f4" stroke-width="0.8"/>
+        <polygon points="24,16 20,12 20,20" fill="#6a9fd4"/>
+      </svg>`
+    ),
+
+    // D3 Graph Viz - network graph icon
+    graphviz: svgIcon(
+      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+        <rect x="3" y="3" width="26" height="26" rx="3" fill="#e8e8e8" stroke="#6a9fd4" stroke-width="1.5"/>
+        <line x1="9" y1="10" x2="16" y2="8" stroke="#4a7ab5" stroke-width="1.5"/>
+        <line x1="9" y1="10" x2="22" y2="20" stroke="#4a7ab5" stroke-width="1.5"/>
+        <line x1="16" y1="8" x2="22" y2="20" stroke="#4a7ab5" stroke-width="1.5"/>
+        <circle cx="9" cy="10" r="3" fill="#6a9fd4" stroke="#4a6a8c" stroke-width="1"/>
+        <circle cx="16" cy="8" r="2.5" fill="#7ab5e8" stroke="#4a6a8c" stroke-width="1"/>
+        <circle cx="22" cy="20" r="3" fill="#6a9fd4" stroke="#4a6a8c" stroke-width="1"/>
+        <circle cx="12" cy="22" r="2.5" fill="#7ab5e8" stroke="#4a6a8c" stroke-width="1"/>
+        <line x1="22" y1="20" x2="12" y2="22" stroke="#4a7ab5" stroke-width="1.5"/>
+      </svg>`
+    ),
+
     // Menu (mouse logo - XFCE's whisker menu icon)
     menu: svgIcon(
       `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
@@ -78,14 +105,18 @@ const Desktop = (function () {
     { id: 'profile', label: 'Profile', icon: Icons.profile, app: 'profile' },
     { id: 'repos', label: 'Repositories', icon: Icons.repos, app: 'repos' },
     { id: 'activity', label: 'Activity', icon: Icons.activity, app: 'activity' },
-    { id: 'terminal', label: 'Terminal', icon: Icons.terminal, app: 'terminal' }
+    { id: 'terminal', label: 'Terminal', icon: Icons.terminal, app: 'terminal' },
+    { id: 'scroller', label: 'Terminal Scroller', icon: Icons.scroller, app: 'scroller' },
+    { id: 'graphviz', label: 'D3 Graph Viz', icon: Icons.graphviz, app: 'graphviz' }
   ];
 
   const menuItems = [
     { id: 'profile', label: 'Profile', icon: Icons.profile, app: 'profile' },
     { id: 'repos', label: 'Repositories', icon: Icons.repos, app: 'repos' },
     { id: 'activity', label: 'Activity', icon: Icons.activity, app: 'activity' },
-    { id: 'terminal', label: 'Terminal', icon: Icons.terminal, app: 'terminal' }
+    { id: 'terminal', label: 'Terminal', icon: Icons.terminal, app: 'terminal' },
+    { id: 'scroller', label: 'Terminal Scroller', icon: Icons.scroller, app: 'scroller' },
+    { id: 'graphviz', label: 'D3 Graph Viz', icon: Icons.graphviz, app: 'graphviz' }
   ];
 
   function init() {

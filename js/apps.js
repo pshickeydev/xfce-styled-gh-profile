@@ -71,10 +71,43 @@ const Apps = (function () {
         width: 600,
         height: 360,
         loader: loadTerminal
+      },
+      scroller: {
+        title: 'Terminal Scroller',
+        icon: icons.scroller,
+        width: 800,
+        height: 500,
+        loader: loadIframeApp('https://pshickeydev.github.io/terminal-scroller/')
+      },
+      graphviz: {
+        title: 'D3 Graph Viz',
+        icon: icons.graphviz,
+        width: 800,
+        height: 500,
+        loader: loadIframeApp('https://pshickeydev.github.io/d3-graph-viz/')
       }
     };
 
     return configs[appId];
+  }
+
+  // ========================================
+  // Iframe App (external GitHub Pages sites)
+  // ========================================
+  function loadIframeApp(url) {
+    return function (contentEl, win) {
+      contentEl.innerHTML = `
+        <div class="iframe-app">
+          <div class="iframe-loading"><div class="spinner"></div><span>Loading...</span></div>
+          <iframe class="app-iframe" src="${url}" title="${win.title}" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
+        </div>
+      `;
+      const iframe = contentEl.querySelector('.app-iframe');
+      const loading = contentEl.querySelector('.iframe-loading');
+      iframe.addEventListener('load', () => {
+        if (loading) loading.remove();
+      });
+    };
   }
 
   // ========================================

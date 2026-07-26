@@ -29,6 +29,8 @@ A GitHub Pages site that displays your GitHub profile styled as an XFCE desktop 
 - **Repositories window** — Thunar-style file manager grid with repo details
 - **Activity window** — recent GitHub events with icons
 - **Terminal window** — interactive terminal with commands: `help`, `whoami`, `ls`, `cat <repo>`, `stats`, `activity`, `clear`
+- **Terminal Scroller window** — loads pshickeydev.github.io/terminal-scroller in an iframe
+- **D3 Graph Viz window** — loads pshickeydev.github.io/d3-graph-viz in an iframe
 
 ## API Rate Limiting
 
@@ -55,6 +57,6 @@ The site uses unauthenticated GitHub API calls (60 requests/hour per IP). Data i
     ├── github.js        # GitHub API module with caching
     ├── windowmanager.js # Window manager (drag, resize, focus)
     ├── desktop.js       # Desktop environment (icons, panel, menu, clock)
-    ├── apps.js          # App definitions (Profile, Repos, Activity, Terminal)
+    ├── apps.js          # App definitions (Profile, Repos, Activity, Terminal, Terminal Scroller, D3 Graph Viz)
     └── main.js          # Entry point
 ```

@@ -97,11 +97,13 @@ Dragging and resizing work via `document` mousemove/mouseup listeners. Windows a
 
 ### Apps (`Apps`)
 
-`Apps.launch(appId)` opens or re-focuses one of four apps:
+`Apps.launch(appId)` opens or re-focuses one of six apps:
 - `profile`
 - `repos`
 - `activity`
 - `terminal`
+- `scroller` — iframe to pshickeydev.github.io/terminal-scroller
+- `graphviz` — iframe to pshickeydev.github.io/d3-graph-viz
 
 Only one window per app type is allowed at a time; this is tracked in `openApps`. Closing an app removes it from `openApps`.
 
@@ -172,7 +174,7 @@ App content is rendered by replacing `contentEl.innerHTML` after async GitHub AP
 ## Testing
 
 There are no tests. Manual testing checklist for changes:
-- Open each of the four apps from the desktop and the menu.
+- Open each of the six apps from the desktop and the menu.
 - Minimize, restore, maximize, drag, and resize windows.
 - Verify keyboard navigation on desktop icons, menu items, repo grid, and taskbar items.
 - Verify terminal commands: `help`, `whoami`, `ls`, `cat <repo>`, `stats`, `activity`, `clear`.
