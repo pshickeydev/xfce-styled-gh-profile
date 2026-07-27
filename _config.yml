@@ -1,4 +1,0 @@
-# GitHub Pages configuration
-# This ensures Jekyll doesn't process files it shouldn't
-exclude:
-  - README.md
