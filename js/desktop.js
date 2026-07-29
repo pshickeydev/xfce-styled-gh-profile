@@ -130,7 +130,7 @@ const Desktop = (function () {
   function renderDesktopIcons() {
     const container = document.getElementById('desktop-icons');
     container.innerHTML = '';
-    desktopIcons.forEach((item, idx) => {
+    desktopIcons.forEach((item) => {
       const el = document.createElement('div');
       el.className = 'desktop-icon';
       el.dataset.app = item.app;
@@ -175,13 +175,28 @@ const Desktop = (function () {
 
   function renderMenu() {
     const menu = document.getElementById('menu-dropdown');
-    let avatar = '';
-    GitHubAPI.getUser().then(user => {
-      avatar = user.avatar_url || '';
-      renderMenuWithAvatar(avatar);
-    }).catch(() => {
-      renderMenuWithAvatar('');
-    });
+    renderMenuWithAvatar('');
+
+    // Fetch avatar lazily only when menu is first opened
+    let avatarFetched = false;
+    function fetchAvatarOnce() {
+      if (avatarFetched) return;
+      avatarFetched = true;
+      GitHubAPI.getUser().then(user => {
+        const avatarUrl = user.avatar_url || '';
+        if (avatarUrl) {
+          const header = menu.querySelector('.menu-header');
+          if (header) {
+            const placeholder = header.querySelector('.menu-avatar');
+            const img = document.createElement('img');
+            img.className = 'menu-avatar';
+            img.src = avatarUrl;
+            img.alt = GitHubAPI.username + ' avatar';
+            header.replaceChild(img, placeholder);
+          }
+        }
+      }).catch(() => {});
+    }
 
     function renderMenuWithAvatar(avatarUrl) {
       menu.innerHTML = `
@@ -190,7 +205,7 @@ const Desktop = (function () {
           <span>Applications</span>
         </div>
         <div class="menu-section" role="none">
-          ${menuItems.map((item, idx) => `
+          ${menuItems.map((item) => `
             <div class="menu-item" data-app="${item.app}" role="menuitem" tabindex="-1" aria-label="${item.label}">
               <img class="menu-item-icon" src="${item.icon}" alt="" aria-hidden="true">
               <span>${item.label}</span>
@@ -229,6 +244,9 @@ const Desktop = (function () {
         });
       });
     }
+
+    // Expose fetchAvatarOnce for the menu button to trigger
+    menu._fetchAvatarOnce = fetchAvatarOnce;
   }
 
   function initMenuButton() {
@@ -259,6 +277,10 @@ const Desktop = (function () {
     btn.classList.add('open');
     btn.setAttribute('aria-expanded', 'true');
     menuOpen = true;
+    // Lazily fetch avatar on first open
+    if (menu._fetchAvatarOnce) {
+      menu._fetchAvatarOnce();
+    }
     // Focus first menu item
     const firstItem = menu.querySelector('.menu-item');
     if (firstItem) {

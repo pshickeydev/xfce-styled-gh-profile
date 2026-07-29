@@ -61,74 +61,7 @@ html, body {
 }
 
 /* Mobile-friendly scaling for small screens */
-@media (max-width: 640px) {
-  html {
-    font-size: 13px;
-  }
-
-  #panel {
-    height: 36px;
-    padding: 0 6px;
-  }
-
-  #menu-button {
-    height: 32px;
-    padding: 3px 10px 3px 8px;
-    font-size: 13px;
-  }
-
-  #menu-button .panel-icon {
-    width: 16px;
-    height: 16px;
-  }
-
-  .taskbar-item {
-    height: 28px;
-    padding: 2px 6px;
-  }
-
-  .taskbar-item img,
-  .taskbar-item .taskbar-icon {
-    width: 16px;
-    height: 16px;
-  }
-
-  .taskbar-item .taskbar-label {
-    display: none;
-  }
-
-  #desktop-icons {
-    top: 8px;
-    left: 8px;
-    gap: 6px;
-    max-height: calc(100vh - 50px);
-  }
-
-  .desktop-icon {
-    width: 72px;
-    padding: 6px 2px;
-  }
-
-  .desktop-icon img,
-  .desktop-icon .icon-img {
-    width: 28px;
-    height: 28px;
-  }
-
-  .desktop-icon .icon-label {
-    font-size: 11px;
-    max-width: 70px;
-  }
-
-  #menu-dropdown {
-    bottom: 38px;
-    left: 4px;
-    width: calc(100vw - 8px);
-    max-width: 320px;
-  }
-}
-
-@media (max-height: 480px) {
+@media (max-width: 640px), (max-height: 480px) {
   html {
     font-size: 13px;
   }

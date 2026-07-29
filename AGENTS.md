@@ -158,7 +158,7 @@ App content is rendered by replacing `contentEl.innerHTML` after async GitHub AP
 - **Single-instance apps**: `Apps.openApps` prevents duplicate windows. If you close an app, `onClose` deletes it from `openApps` so it can be reopened.
 - **Window content is replaced, not patched**: apps use `contentEl.innerHTML = ...`. Re-rendering wipes previous event listeners; any state must live in closure variables or be reattached.
 - **Repo detail back-navigation**: `showRepoDetail` mutates `win.title` and the titlebar text, then restores them when going back. It re-renders the repo grid by calling `renderRepoGrid(contentEl, allRepos, win)`.
-- **Terminal `processCommand` signature**: `processCommand(cmd, addLine, addPrompt, state)`. `addLine` appends a line; `addPrompt` creates a new editable input. Sync commands must call `addPrompt()`; async commands must set `isAsync = true` and call `addPrompt()` themselves in `finally()`.
+- **Terminal `processCommand` signature**: `processCommand(cmd, addLine, addPrompt)`. `addLine` appends a line; `addPrompt` creates a new editable input. Sync commands must call `addPrompt()`; async commands must set `isAsync = true` and call `addPrompt()` themselves in `finally()`.
 - **localStorage cache**: If the site ever shows stale data, clear `localStorage` items with the prefix `gh_cache_`.
 - **Rate limits**: Unauthenticated GitHub API is 60 requests/hour/IP. Cache keeps this within bounds under normal use.
 - **CORS**: Fetching `repo.languages_url` in `showRepoDetail` relies on GitHub's CORS headers; if those ever change, the language bar will silently fail (the `.catch` is empty).

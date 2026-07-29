@@ -113,7 +113,8 @@ const Apps = (function () {
   // ========================================
   // Profile App
   // ========================================
-  function loadProfile(contentEl, win) {
+  function loadProfile(contentEl, _win) {
+    contentEl.setAttribute('aria-live', 'polite');
     GitHubAPI.getUser().then(user => {
       const created = new Date(user.created_at).toLocaleDateString('en-US', {
         year: 'numeric', month: 'long', day: 'numeric'
@@ -149,13 +150,15 @@ const Apps = (function () {
           </div>
           ${user.company ? `<div class="profile-meta"><strong>Company:</strong> ${escapeHtml(user.company)}</div>` : ''}
           ${user.location ? `<div class="profile-meta"><strong>Location:</strong> ${escapeHtml(user.location)}</div>` : ''}
-          ${user.blog ? `<div class="profile-meta"><strong>Blog:</strong> <a class="profile-link" href="${ensureProtocol(user.blog)}" target="_blank">${escapeHtml(user.blog)}</a></div>` : ''}
+          ${user.blog ? `<div class="profile-meta"><strong>Blog:</strong> <a class="profile-link" href="${sanitizeUrl(user.blog)}" target="_blank">${escapeHtml(user.blog)}</a></div>` : ''}
           <div class="profile-meta"><strong>Member since:</strong> ${created}</div>
-          <a class="profile-link" href="${user.html_url}" target="_blank">View on GitHub →</a>
+          <a class="profile-link" href="${sanitizeUrl(user.html_url)}" target="_blank">View on GitHub →</a>
         </div>
       `;
+      contentEl.setAttribute('aria-label', 'Profile loaded');
     }).catch(err => {
       contentEl.innerHTML = `<div class="window-loading"><span style="color:#c00;">Error: ${escapeHtml(err.message)}</span></div>`;
+      contentEl.setAttribute('aria-label', 'Profile failed to load');
     });
   }
 
@@ -163,10 +166,13 @@ const Apps = (function () {
   // Repos App (Thunar-style file manager)
   // ========================================
   function loadRepos(contentEl, win) {
+    contentEl.setAttribute('aria-live', 'polite');
     GitHubAPI.getRepos().then(repos => {
       renderRepoGrid(contentEl, repos, win);
+      contentEl.setAttribute('aria-label', 'Repositories loaded');
     }).catch(err => {
       contentEl.innerHTML = `<div class="window-loading"><span style="color:#c00;">Error: ${escapeHtml(err.message)}</span></div>`;
+      contentEl.setAttribute('aria-label', 'Repositories failed to load');
     });
   }
 
@@ -195,41 +201,56 @@ const Apps = (function () {
       </div>
     `;
 
-    contentEl.querySelectorAll('.repo-item').forEach(el => {
-      let clickTimer = null;
-      function openItem() {
-        if (clickTimer) {
-          clearTimeout(clickTimer);
-          clickTimer = null;
-          const repo = repos.find(r => r.name === el.dataset.repo);
-          if (repo) showRepoDetail(contentEl, repo, repos, win);
-        } else {
-          contentEl.querySelectorAll('.repo-item.selected').forEach(s => s.classList.remove('selected'));
-          el.classList.add('selected');
-          clickTimer = setTimeout(() => { clickTimer = null; }, 300);
-        }
+    // Event delegation: single listener on the grid container handles all items
+    const grid = contentEl.querySelector('.repos-grid');
+    let clickTimer = null;
+
+    function handleItemActivation(el) {
+      const repo = repos.find(r => r.name === el.dataset.repo);
+      if (repo) showRepoDetail(contentEl, repo, repos, win);
+    }
+
+    function handleItemSelection(el) {
+      grid.querySelectorAll('.repo-item.selected').forEach(s => s.classList.remove('selected'));
+      el.classList.add('selected');
+    }
+
+    grid.addEventListener('click', (e) => {
+      const el = e.target.closest('.repo-item');
+      if (!el) return;
+      if (clickTimer) {
+        clearTimeout(clickTimer);
+        clickTimer = null;
+        handleItemActivation(el);
+      } else {
+        handleItemSelection(el);
+        clickTimer = setTimeout(() => { clickTimer = null; }, 300);
       }
-      el.addEventListener('click', openItem);
-      el.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          const repo = repos.find(r => r.name === el.dataset.repo);
-          if (repo) showRepoDetail(contentEl, repo, repos, win);
-        }
-        // Arrow navigation
-        const items = Array.from(contentEl.querySelectorAll('.repo-item'));
-        const currentIdx = items.indexOf(el);
-        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
-          e.preventDefault();
-          const next = items[(currentIdx + 1) % items.length];
-          if (next) next.focus();
-        }
-        if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-          e.preventDefault();
-          const prev = items[(currentIdx - 1 + items.length) % items.length];
-          if (prev) prev.focus();
-        }
-      });
+    });
+
+    grid.addEventListener('keydown', (e) => {
+      const el = e.target.closest('.repo-item');
+      if (!el) return;
+
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        handleItemActivation(el);
+        return;
+      }
+
+      // Arrow navigation
+      const items = Array.from(grid.querySelectorAll('.repo-item'));
+      const currentIdx = items.indexOf(el);
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        const next = items[(currentIdx + 1) % items.length];
+        if (next) next.focus();
+      }
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        const prev = items[(currentIdx - 1 + items.length) % items.length];
+        if (prev) prev.focus();
+      }
     });
   }
 
@@ -237,6 +258,7 @@ const Apps = (function () {
     // Update window title
     win.title = repo.name + ' - File Manager';
     win.el.querySelector('.window-title-text').textContent = win.title;
+    win.el.setAttribute('aria-label', win.title);
 
     const updated = new Date(repo.updated_at).toLocaleDateString('en-US', {
       year: 'numeric', month: 'short', day: 'numeric'
@@ -275,14 +297,15 @@ const Apps = (function () {
         <div class="repo-detail-meta">
           <span>License: ${repo.license ? escapeHtml(repo.license.name) : 'None'}</span>
         </div>
-        <a class="profile-link" href="${repo.html_url}" target="_blank">View on GitHub →</a>
-        ${repo.homepage ? `<a class="profile-link" href="${ensureProtocol(repo.homepage)}" target="_blank">View Homepage →</a>` : ''}
+        <a class="profile-link" href="${sanitizeUrl(repo.html_url)}" target="_blank">View on GitHub →</a>
+        ${repo.homepage ? `<a class="profile-link" href="${sanitizeUrl(repo.homepage)}" target="_blank">View Homepage →</a>` : ''}
       </div>
     `;
 
     document.getElementById('repo-back').addEventListener('click', () => {
       win.title = 'Repositories - File Manager';
       win.el.querySelector('.window-title-text').textContent = win.title;
+      win.el.setAttribute('aria-label', win.title);
       renderRepoGrid(contentEl, allRepos, win);
     });
     document.getElementById('repo-back').addEventListener('keydown', (e) => {
@@ -326,10 +349,12 @@ const Apps = (function () {
   // ========================================
   // Activity App
   // ========================================
-  function loadActivity(contentEl, win) {
+  function loadActivity(contentEl, _win) {
+    contentEl.setAttribute('aria-live', 'polite');
     GitHubAPI.getEvents().then(events => {
       if (events.length === 0) {
         contentEl.innerHTML = '<div class="window-loading"><span>No recent activity</span></div>';
+        contentEl.setAttribute('aria-label', 'No recent activity');
         return;
       }
 
@@ -350,15 +375,17 @@ const Apps = (function () {
           </div>
         </div>
       `;
+      contentEl.setAttribute('aria-label', 'Activity loaded');
     }).catch(err => {
       contentEl.innerHTML = `<div class="window-loading"><span style="color:#c00;">Error: ${escapeHtml(err.message)}</span></div>`;
+      contentEl.setAttribute('aria-label', 'Activity failed to load');
     });
   }
 
   // ========================================
   // Terminal App
   // ========================================
-  function loadTerminal(contentEl, win) {
+  function loadTerminal(contentEl, _win) {
     contentEl.innerHTML = `
       <div class="terminal-content" id="terminal-output">
       </div>
@@ -375,7 +402,7 @@ const Apps = (function () {
       output.scrollTop = output.scrollHeight;
     }
 
-    function addPrompt(input) {
+    function addPrompt() {
       const wrap = document.createElement('div');
       wrap.className = 'terminal-input-line';
       wrap.innerHTML = `<span class="terminal-prompt">${state.user}@github</span>:<span class="terminal-accent">${state.cwd}</span>$`;
@@ -394,7 +421,7 @@ const Apps = (function () {
           const cmd = inputEl.value.trim();
           inputEl.disabled = true;
           inputEl.parentElement.style.opacity = '0.7';
-          processCommand(cmd, addLine, addPrompt, state);
+          processCommand(cmd, addLine, addPrompt);
         }
       });
     }
@@ -412,7 +439,7 @@ const Apps = (function () {
     });
   }
 
-  function processCommand(cmd, addLine, addPrompt, state) {
+  function processCommand(cmd, addLine, addPrompt) {
     const parts = cmd.split(/\s+/);
     const command = parts[0].toLowerCase();
     let isAsync = false;
@@ -490,11 +517,11 @@ const Apps = (function () {
           }
           addLine(`<span class="terminal-accent">${escapeHtml(repo.name)}</span> ${repo.fork ? '[fork]' : ''}`);
           if (repo.description) addLine(`  ${escapeHtml(repo.description)}`);
-          addLine(`  Language: ${repo.language || 'N/A'}`);
+          addLine(`  Language: ${escapeHtml(repo.language || 'N/A')}`);
           addLine(`  Stars: ${repo.stargazers_count} | Forks: ${repo.forks_count}`);
           addLine(`  Open issues: ${repo.open_issues_count}`);
           addLine(`  Updated: ${new Date(repo.updated_at).toLocaleDateString()}`);
-          addLine(`  URL: <span class="terminal-dim">${repo.html_url}</span>`);
+          addLine(`  URL: <span class="terminal-dim">${escapeHtml(repo.html_url)}</span>`);
         }).catch(err => {
           addLine(`<span style="color:#f38ba8;">Error: ${escapeHtml(err.message)}</span>`);
         }).finally(() => {
@@ -571,8 +598,21 @@ const Apps = (function () {
 
   function ensureProtocol(url) {
     if (!url) return '#';
+    // Only allow http/https URLs; block javascript:, data:, etc.
     if (url.startsWith('http://') || url.startsWith('https://')) return url;
-    return 'https://' + url;
+    // Block any string containing a protocol-like scheme (e.g. javascript:, data:, vbscript:, ftp:, mailto:)
+    // A scheme is ALPHA *( ALPHA / DIGIT / "+" / "-" / "." ) but we exclude "." to avoid matching "example.com:" as a scheme
+    if (/^[a-zA-Z][a-zA-Z0-9+-]*:/.test(url)) return '#';
+    // If it looks like a domain or path, prefix with https://
+    if (/^[a-zA-Z0-9][a-zA-Z0-9\-._~:/?#[\]@!$&'()*+,;=%]+$/.test(url)) {
+      return 'https://' + url;
+    }
+    return '#';
+  }
+
+  function sanitizeUrl(url) {
+    const safe = ensureProtocol(url);
+    return safe === '#' ? '' : escapeHtml(safe);
   }
 
   function formatNumber(n) {
@@ -665,7 +705,6 @@ const Apps = (function () {
       'Clojure': '#db5855',
       'Zig': '#ec915c',
       'Nix': '#7e7eff',
-      'Vue': '#41b883',
       'Dockerfile': '#384d54',
       'Makefile': '#427819',
       'Vim Script': '#199f4b',

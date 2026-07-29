@@ -101,6 +101,8 @@ const WindowManager = (function () {
 
     el.setAttribute('role', 'dialog');
     el.setAttribute('aria-label', win.title);
+    el.setAttribute('aria-modal', 'true');
+    el.tabIndex = 0;
 
     container().appendChild(el);
     win.el = el;
@@ -169,6 +171,67 @@ const WindowManager = (function () {
     }
   }
 
+  // --- Global keyboard navigation ---
+  // Use a single document-level listener for all windows
+  document.addEventListener('keydown', (e) => {
+    // Escape: close active window
+    if (e.key === 'Escape') {
+      const activeWin = windows.find(w => !w.minimized && !w.el.classList.contains('inactive'));
+      if (activeWin) {
+        e.preventDefault();
+        closeWindow(activeWin);
+      }
+      return;
+    }
+
+    // Ctrl+` or Alt+Tab: cycle windows
+    if ((e.ctrlKey && e.key === '`') || (e.altKey && e.key === 'Tab')) {
+      e.preventDefault();
+      cycleWindows();
+      return;
+    }
+
+    // Tab: trap focus within active window (only if focus is inside a window)
+    if (e.key === 'Tab') {
+      const activeWin = windows.find(w => !w.minimized && !w.el.classList.contains('inactive'));
+      if (activeWin && activeWin.el.contains(document.activeElement)) {
+        trapFocus(activeWin, e);
+      }
+    }
+  });
+
+  function trapFocus(win, e) {
+    const focusable = win.el.querySelectorAll(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    if (focusable.length === 0) return;
+
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+
+    if (e.shiftKey) {
+      if (document.activeElement === first || document.activeElement === win.el) {
+        e.preventDefault();
+        last.focus();
+      }
+    } else {
+      if (document.activeElement === last || document.activeElement === win.el) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
+  }
+
+  function cycleWindows() {
+    const visible = windows.filter(w => !w.minimized);
+    if (visible.length <= 1) return;
+
+    const currentIdx = visible.findIndex(w => !w.el.classList.contains('inactive'));
+    const nextIdx = (currentIdx + 1) % visible.length;
+    focusWindow(visible[nextIdx]);
+    visible[nextIdx].el.focus();
+  }
+
   function focusWindow(win) {
     if (win.minimized) return;
     win.el.style.zIndex = ++zIndexCounter;
@@ -179,6 +242,8 @@ const WindowManager = (function () {
     });
     win.el.classList.remove('inactive');
     Desktop.updateTaskbar();
+    // Move focus to the window for keyboard navigation
+    win.el.focus();
   }
 
   function minimizeWindow(win) {
@@ -191,6 +256,7 @@ const WindowManager = (function () {
     win.minimized = false;
     win.el.classList.remove('minimized');
     focusWindow(win);
+    win.el.focus();
     Desktop.updateTaskbar();
   }
 
@@ -225,6 +291,14 @@ const WindowManager = (function () {
     win.el.remove();
     windows = windows.filter(w => w !== win);
     Desktop.updateTaskbar();
+    // Focus next available window or return focus to desktop
+    const nextWin = windows.find(w => !w.minimized);
+    if (nextWin) {
+      focusWindow(nextWin);
+      nextWin.el.focus();
+    } else {
+      document.getElementById('desktop').focus();
+    }
   }
 
   function getWindows() {
