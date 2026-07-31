@@ -365,7 +365,7 @@ const Apps = (function () {
               <div class="activity-item">
                 <img class="activity-icon" src="${getActivityIcon(event.type)}" alt="" aria-hidden="true">
                 <div class="activity-text">
-                  <span class="activity-type">${formatEventType(event.type)}</span>
+                  <span class="activity-type">${formatEventType(event)}</span>
                   <span class="activity-repo">${escapeHtml(event.repo.name)}</span>
                   <br>
                   <span class="activity-time">${timeAgo(new Date(event.created_at))}</span>
@@ -555,7 +555,7 @@ const Apps = (function () {
             addLine('<span class="terminal-dim">No recent activity.</span>');
           } else {
             events.slice(0, 10).forEach(event => {
-              addLine(`  <span class="terminal-accent">${escapeHtml(event.repo.name)}</span> <span class="terminal-dim">${formatEventType(event.type)} - ${timeAgo(new Date(event.created_at))}</span>`);
+              addLine(`  <span class="terminal-accent">${escapeHtml(event.repo.name)}</span> <span class="terminal-dim">${formatEventType(event)} - ${timeAgo(new Date(event.created_at))}</span>`);
             });
           }
         }).catch(err => {
@@ -635,21 +635,51 @@ const Apps = (function () {
     return years + ' year' + (years !== 1 ? 's' : '') + ' ago';
   }
 
-  function formatEventType(type) {
+  function formatEventType(event) {
+    const type = typeof event === 'string' ? event : event.type;
+    const action = event && event.payload && event.payload.action;
     const map = {
       'PushEvent': 'pushed to',
       'CreateEvent': 'created',
       'DeleteEvent': 'deleted',
       'ForkEvent': 'forked',
       'IssueCommentEvent': 'commented on',
-      'IssuesEvent': 'interacted with issue in',
-      'PullRequestEvent': 'opened pull request in',
       'WatchEvent': 'starred',
       'ReleaseEvent': 'released',
       'CommitCommentEvent': 'commented on commit in',
       'MemberEvent': 'added member to',
       'PublicEvent': 'made public'
     };
+    if (type === 'IssuesEvent') {
+      const issuesMap = {
+        opened: 'opened issue in',
+        closed: 'closed issue in',
+        reopened: 'reopened issue in',
+        edited: 'edited issue in',
+        assigned: 'assigned issue in',
+        labeled: 'labeled issue in',
+        unlabeled: 'unlabeled issue in',
+        transferred: 'transferred issue in'
+      };
+      return (action && issuesMap[action]) || 'interacted with issue in';
+    }
+    if (type === 'PullRequestEvent') {
+      const isMerged = event && event.payload && event.payload.pull_request && event.payload.pull_request.merged;
+      const prMap = {
+        opened: 'opened pull request in',
+        reopened: 'reopened pull request in',
+        edited: 'updated pull request in',
+        synchronize: 'updated pull request in',
+        assigned: 'assigned pull request in',
+        review_requested: 'requested review on pull request in',
+        ready_for_review: 'marked pull request ready for review in',
+        locked: 'locked pull request in',
+        unlocked: 'unlocked pull request in'
+      };
+      if (action === 'closed' && isMerged) return 'merged pull request in';
+      if (action === 'closed') return 'closed pull request in';
+      return (action && prMap[action]) || 'interacted with pull request in';
+    }
     return map[type] || type.replace('Event', '').toLowerCase();
   }
 
